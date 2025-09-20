@@ -12,6 +12,8 @@ spec:
     - name: homelab-gateway
       namespace: gateway
       sectionName: http
+      group: gateway.networking.k8s.io	
+      kind: Gateway
   hostnames:
     - {{ $service }}.adelisle.com
   rules:
@@ -22,6 +24,8 @@ spec:
       backendRefs:
         - name: {{ $service }}
           port: 80
+          group: ''	
+          kind: Service
 {{- end -}}
 {{- end }}
 {{ end }}
