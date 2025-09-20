@@ -1,0 +1,105 @@
+{{- $values := .Values -}}
+{{- range $service, $config := .Values.services }}
+{{ if $config.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service }}
+  namespace: {{ $.Release.Namespace }}
+  labels: 
+    app: {{ $service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $service }}
+  template:
+    metadata:
+      labels:
+        app: {{ $service }}
+    spec:
+      # securityContext:
+      #   runAsUser: 1000
+      #   runAsGroup: 1000
+      #   fsGroup: 1000
+      #   supplementalGroups: [1000]
+      containers:
+      - name: {{ $service }}
+        # securityContext:
+        #   readOnlyRootFilesystem: true
+        #   privileged: false
+        #   allowPrivilegeEscalation: false
+        #   capabilities:
+        #     drop:
+        #     - ALL
+        #   runAsNonRoot: true
+        #   runAsUser: 1000
+        #   runAsGroup: 1000
+        #   seccompProfile:
+        #     type: RuntimeDefault
+        # securityContext:
+          # runAsUser: 1030  # Add this line - use a non-root UID
+          # runAsGroup: 1000 # Add this line - use a non-root GID
+          # allowPrivilegeEscalation: false
+          # # runAsNonRoot: true
+          # capabilities:
+          #   drop: ["ALL"]
+          # seccompProfile:
+            # type: RuntimeDefault
+        image: "{{ $config.image }}:{{ $config.tag }}"
+        env:
+        - name: {{ upper $service }}__AUTH__METHOD
+          value: External
+        - name: {{ upper $service }}__AUTH__REQUIRED
+          value: DisabledForLocalAddresses
+        - name: {{ upper $service }}__APP__THEME
+          value: dark
+        - name: {{ upper $service }}__POSTGRES__HOST
+          value: {{ $service }}-db-rw.content-mgmt.svc.cluster.local
+        - name: {{ upper $service }}__POSTGRES_PORT
+          value: "5432"
+        - name: {{ upper $service }}__POSTGRES__USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ $config.postgresql.secretRef }}
+              key: username
+        - name: {{ upper $service }}__POSTGRES__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $config.postgresql.secretRef }}
+              key: password
+        {{- range $key, $value := $values.global.permissions }}
+        - name: {{ $key | quote }}
+          value: {{ $value | quote }}
+        {{- end }}
+
+        ports:
+        - containerPort: {{ $config.containerPort }} 
+        volumeMounts:
+          - name: configs
+            mountPath: /config
+            subPath: {{ $service }}
+          - name: libraries
+            mountPath: /books
+            subPath: books
+          - name: libraries
+            mountPath: /tv
+            subPath: series
+          - name: libraries
+            mountPath: /movies
+            subPath: movies
+          - name: downloads
+            mountPath: /downloads
+      volumes:
+      - name: configs
+        persistentVolumeClaim:
+          claimName: configs
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: downloads
+      - name: libraries
+        persistentVolumeClaim:
+          claimName: libraries
+{{ end }}
+{{- end }}

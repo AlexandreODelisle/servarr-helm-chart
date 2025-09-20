@@ -1,0 +1,6 @@
+dependencies:
+- name: eos-secret-store
+  repository: oci://ghcr.io/alexandreodelisle
+  version: 0.2.1
+digest: sha256:c9880866c81266c5d22cbb003f2ba97f50deb0920f23042d5f77af06327a3c76
+generated: "2025-08-14T17:30:16.116124433-04:00"

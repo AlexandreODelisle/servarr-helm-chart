@@ -1,0 +1,33 @@
+{{ if eq .Values.global.network.expose.type "ingress" }}
+{{- range $service, $config := .Values.services }}
+{{- if $config.enabled -}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $service }}
+  namespace: {{ $.Release.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: {{ $service }}-cert
+    hosts:
+    - {{ $service }}.{{ $.Values.global.network.domain }}
+  rules: 
+  - host: {{ $service }}.{{ $.Values.global.network.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: {{ $service }}
+            port: 
+              number: 80
+{{- end -}}
+{{- end }}
+{{ end }}
