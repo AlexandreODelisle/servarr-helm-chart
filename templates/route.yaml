@@ -24,6 +24,7 @@ spec:
       backendRefs:
         - name: {{ $service }}
           port: 80
+          weight: 1
           group: ''	
           kind: Service
 {{- end -}}
