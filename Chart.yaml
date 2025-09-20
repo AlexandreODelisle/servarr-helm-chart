@@ -16,14 +16,14 @@ maintainers:
     email: alexodelisle@gmail.com
 dependencies:
   - name: eos-secret-store
-    version: "0.2.1"
+    version: "0.0.1"
     repository: "oci://ghcr.io/alexandreodelisle"
     condition: eos-secret-store.enabled
-  - name: cnpg
+  - name: cloudnative-pg
     version: "v0.26.0"
     repository: "https://cloudnative-pg.github.io/charts"
     condition: cnpg.enabled
   - name: openebs
-    version: "3.10.0"
+    version: "4.3.2"
     repository: "https://openebs.github.io/openebs"
     condition: openebs.enabled

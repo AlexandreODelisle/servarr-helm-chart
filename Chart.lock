@@ -1,6 +1,12 @@
 dependencies:
 - name: eos-secret-store
   repository: oci://ghcr.io/alexandreodelisle
-  version: 0.2.1
-digest: sha256:c9880866c81266c5d22cbb003f2ba97f50deb0920f23042d5f77af06327a3c76
-generated: "2025-08-14T17:30:16.116124433-04:00"
+  version: 0.0.1
+- name: cloudnative-pg
+  repository: https://cloudnative-pg.github.io/charts
+  version: 0.26.0
+- name: openebs
+  repository: https://openebs.github.io/openebs
+  version: 4.3.2
+digest: sha256:d05d7d0598887e41d37c4099baf95a02bac9969268d3103bdf6ec2e53d2ac89f
+generated: "2025-09-20T12:49:19.935444746-04:00"
