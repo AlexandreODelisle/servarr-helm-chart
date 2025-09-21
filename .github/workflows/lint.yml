@@ -41,11 +41,12 @@ jobs:
 
       - name: Add Helm repositories
         run: |
-          helm repo add external-secrets https://charts.external-secrets.io
+          helm repo add openebs https://openebs.github.io/openebs
+          helm repo add cloudnative-pg https://cloudnative-pg.github.io/charts
           helm repo update
 
       - name: Build chart dependencies
-        run: helm dependency build
+        run: helm dependency build 
 
       - name: Lint Helm chart
         run: helm lint .
