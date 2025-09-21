@@ -16,7 +16,7 @@ maintainers:
     email: alexodelisle@gmail.com
 dependencies:
   - name: eos-secret-store
-    version: "0.0.1"
+    version: "0.0.2"
     repository: "oci://ghcr.io/alexandreodelisle"
     condition: eos-secret-store.enabled
   - name: cloudnative-pg
