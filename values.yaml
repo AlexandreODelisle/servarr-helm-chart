@@ -1,0 +1,160 @@
+volumeMounts:
+  - name: libraries
+    mountPath: /tv
+    subPath: series
+  - name: libraries
+    mountPath: /movies
+    subPath: movies
+  - name: libraries
+    mountPath: /books
+    subPath: books
+  - name: downloads
+    mountPath: /downloads
+global:
+  permissions:
+    PUID: 1030
+    PGID: 1000
+  network:
+    domain: mydomain.com
+    expose: 
+      type: route # options: ingress, route, none
+      
+services:
+  sonarr:
+    enabled: true
+    image: lscr.io/linuxserver/sonarr
+    tag: 4.0.15
+    containerPort: 8989
+    postgresql:
+      enabled: true
+      username: sonarr
+      secretRef: sonarr-db-secret
+  radarr:
+    enabled: true
+    image: lscr.io/linuxserver/radarr
+    tag: 5.26.2
+    containerPort: 7878
+    postgresql:
+      enabled: true
+      username: radarr
+      secretRef: radarr-db-secret
+  readarr:
+    enabled: true
+    image: lscr.io/linuxserver/readarr
+    tag: 0.3.22-nightly
+    containerPort: 8787
+    postgresql:
+      enabled: true
+      username: readarr
+      secretRef: readarr-db-secret
+  prowlarr:
+    enabled: true
+    image: lscr.io/linuxserver/prowlarr
+    tag: 1.37.0
+    containerPort: 9696
+    postgresql:
+      enabled: true
+      username: prowlarr
+      secretRef: prowlarr-db-secret
+  bazarr:
+    enabled: true
+    image: lscr.io/linuxserver/bazarr
+    tag: v1.4.3-ls264
+    containerPort: 6767
+    postgresql:
+      enabled: true
+      username: bazarr
+      secretRef: bazarr-db-secret
+storage:
+  nfs:
+    IPAddress: 10.0.0.0
+  mounts:
+    libraries:
+      storage: 800Gi
+      storageClaim: 250Gi
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/libraries"
+    configs:
+      storage: 800Gi
+      storageClaim: 250Gi
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/configs/staging"
+    downloads:
+      storage: 800Gi
+      storageClaim: 250Gi
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/downloads"
+
+      
+# Dependency charts configuration
+cnpg:
+  enabled: false
+openebs:
+  enabled: false
+eos-secret-store:
+  enabled: true
+  rbac: 
+    serviceAccountName: "media-eos-vault-sa" 
+  secretStore:
+    name: vault-backend
+    vault:
+      server: "https://vault.mydomain.com"
+      path: "homelab"
+      role: "media-read-role"
+      mountPath: "test-cluster"
+
+  externalSecretsDefaults:
+    refreshInterval: 1h
+    creationPolicy: Owner
+    secretStoreRef: vault-backend
+
+  externalSecrets:
+    - name: readarr-db-secret
+      targetName: readarr-db-secret
+      data:
+      - secretKey: username
+        remoteKey: media/readarr/db_credentials
+        remoteProperty: username
+      - secretKey: password
+        remoteKey: media/readarr/db_credentials
+        remoteProperty: password
+    - name: bazarr-db-secret
+      targetName: bazarr-db-secret
+      data:
+      - secretKey: username
+        remoteKey: media/bazarr/db_credentials
+        remoteProperty: username
+      - secretKey: password
+        remoteKey: media/bazarr/db_credentials
+        remoteProperty: password
+    - name: sonarr-db-secret
+      targetName: sonarr-db-secret
+      data:
+      - secretKey: username
+        remoteKey: media/sonarr/db_credentials
+        remoteProperty: username
+      - secretKey: password
+        remoteKey: media/sonarr/db_credentials
+        remoteProperty: password
+    - name: radarr-db-secret
+      targetName: radarr-db-secret
+      data:
+      - secretKey: username
+        remoteKey: media/radarr/db_credentials
+        remoteProperty: username
+      - secretKey: password
+        remoteKey: media/radarr/db_credentials
+        remoteProperty: password
+    - name: prowlarr-db-secret
+      targetName: prowlarr-db-secret
+      data:
+      - secretKey: username
+        remoteKey: media/prowlarr/db_credentials
+        remoteProperty: username
+      - secretKey: password
+        remoteKey: media/prowlarr/db_credentials
+        remoteProperty: password
+        
+        
+        
+        
