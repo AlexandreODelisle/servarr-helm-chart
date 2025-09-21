@@ -19,34 +19,14 @@ spec:
       labels:
         app: {{ $service }}
     spec:
-      # securityContext:
-      #   runAsUser: 1000
-      #   runAsGroup: 1000
-      #   fsGroup: 1000
-      #   supplementalGroups: [1000]
       containers:
       - name: {{ $service }}
-        # securityContext:
-        #   readOnlyRootFilesystem: true
-        #   privileged: false
-        #   allowPrivilegeEscalation: false
-        #   capabilities:
-        #     drop:
-        #     - ALL
-        #   runAsNonRoot: true
-        #   runAsUser: 1000
-        #   runAsGroup: 1000
-        #   seccompProfile:
-        #     type: RuntimeDefault
-        # securityContext:
-          # runAsUser: 1030  # Add this line - use a non-root UID
-          # runAsGroup: 1000 # Add this line - use a non-root GID
-          # allowPrivilegeEscalation: false
-          # # runAsNonRoot: true
-          # capabilities:
-          #   drop: ["ALL"]
-          # seccompProfile:
-            # type: RuntimeDefault
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          seccompProfile:
+            type: RuntimeDefault
         image: "{{ $config.image }}:{{ $config.tag }}"
         env:
         - name: {{ upper $service }}__AUTH__METHOD
