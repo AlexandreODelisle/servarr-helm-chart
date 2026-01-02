@@ -1,6 +1,5 @@
-{{ if eq .Values.global.network.expose.type "route" }}
 {{- range $service, $config := .Values.services }}
-{{- if $config.enabled -}}
+{{- if and (eq $.Values.global.network.expose.type "route") ( $config.enabled ) }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -15,7 +14,7 @@ spec:
       group: gateway.networking.k8s.io	
       kind: Gateway
   hostnames:
-    - {{ $service }}.adelisle.com
+    - {{ $service }}.{{ $.Values.global.network.domain }}
   rules:
     - matches:
         - path:
@@ -27,6 +26,5 @@ spec:
           weight: 1
           group: ''	
           kind: Service
-{{- end -}}
 {{- end }}
-{{ end }}
+{{- end }}

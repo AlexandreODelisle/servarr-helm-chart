@@ -57,20 +57,20 @@ spec:
         ports:
         - containerPort: {{ $config.containerPort }} 
         volumeMounts:
-          - name: configs
-            mountPath: /config
-            subPath: {{ $service }}
-          - name: libraries
-            mountPath: /books
-            subPath: books
-          - name: libraries
-            mountPath: /tv
-            subPath: series
-          - name: libraries
-            mountPath: /movies
-            subPath: movies
-          - name: downloads
-            mountPath: /downloads
+        - name: configs
+          mountPath: /config
+          subPath: {{ $service }}
+        - name: libraries
+          mountPath: /books
+          subPath: books
+        - name: libraries
+          mountPath: /tv
+          subPath: series
+        - name: libraries
+          mountPath: /movies
+          subPath: movies
+        - name: downloads
+        mountPath: /downloads
       volumes:
       - name: configs
         persistentVolumeClaim:
