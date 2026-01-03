@@ -19,8 +19,15 @@ spec:
       labels:
         app: {{ $service }}
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: {{ $service }}
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -28,6 +35,7 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         image: "{{ $config.image }}:{{ $config.tag }}"
+        imagePullPolicy: Always
         env:
         - name: {{ upper $service }}__AUTH__METHOD
           value: External
@@ -70,7 +78,7 @@ spec:
           mountPath: /movies
           subPath: movies
         - name: downloads
-        mountPath: /downloads
+          mountPath: /downloads
       volumes:
       - name: configs
         persistentVolumeClaim:
