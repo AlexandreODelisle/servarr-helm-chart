@@ -8,8 +8,8 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   parentRefs:
-    - name: homelab-gateway
-      namespace: gateway
+    - name: {{ $.Values.global.network.expose.gateway.name }}
+      namespace: {{ $.Values.global.network.expose.gateway.namespace }}
       sectionName: http
       group: gateway.networking.k8s.io	
       kind: Gateway
