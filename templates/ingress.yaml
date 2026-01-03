@@ -1,5 +1,5 @@
 {{- range $service, $config := .Values.services }}
-{{- if and (eq $.Values.global.network.expose.type "route") ( $config.enabled ) }}
+{{- if and (eq $.Values.global.network.expose.type "ingress") ( $config.enabled ) }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
