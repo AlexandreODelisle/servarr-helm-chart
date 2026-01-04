@@ -17,6 +17,9 @@ spec:
     - nfsvers=4.0
     - nolock
     - rw
+    - nodev  # Prevent the use of device files on the mount
+    - nosuid # Ignore set-user-identifier bits
+    - noexec # (Optional) Prevent binaries from running from the share
   nfs:
     server: {{ $root.storage.nfs.IPAddress }}
     path: {{ $config.path }}

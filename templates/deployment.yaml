@@ -30,9 +30,10 @@ spec:
           cpu: "500m"
         securityContext:
                 # Run the whole pod as the NFS owner
-          runAsUser: 1024
+          runAsUser: 1030
           runAsGroup: 1000
           fsGroup: 1000
+          runAsNonRoot: true
           fsGroupChangePolicy: "OnRootMismatch"
           allowPrivilegeEscalation: false
           capabilities:
@@ -84,6 +85,8 @@ spec:
           subPath: movies
         - name: downloads
           mountPath: /downloads
+        - name: tmp-run
+          mountPath: /run
       volumes:
       - name: configs
         persistentVolumeClaim:
@@ -94,5 +97,8 @@ spec:
       - name: libraries
         persistentVolumeClaim:
           claimName: libraries
+      - name: tmp-run
+        emptyDir:
+          medium: Memory
 {{ end }}
 {{- end }}

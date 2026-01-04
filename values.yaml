@@ -18,6 +18,9 @@ global:
     domain: mydomain.com
     expose: 
       type: route # options: ingress, route, none
+      gateway:
+        name: cilium-gateway
+        namespace: kube-system
       
 services:
   sonarr:
