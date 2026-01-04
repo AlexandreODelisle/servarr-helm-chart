@@ -38,7 +38,7 @@ spec:
         - name: {{ upper $service }}__APP__THEME
           value: dark
         - name: {{ upper $service }}__POSTGRES__HOST
-          value: {{ $service }}-db-rw.content-mgmt.svc.cluster.local
+          value: {{ $service }}-db-rw.{{ $.Release.Namespace }}.svc.cluster.local
         - name: {{ upper $service }}__POSTGRES_PORT
           value: "5432"
         - name: {{ upper $service }}__POSTGRES__USER
