@@ -1,4 +1,3 @@
-{{- $values := .Values -}}
 {{- range $service, $config := .Values.services }}
 {{ if $config.enabled }}
 ---
@@ -22,24 +21,13 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: {{ $service }}
-        requests:
-          memory: "512Mi"
-          cpu: "250m"
-        limits:
-          memory: "1Gi"
-          cpu: "500m"
-        securityContext:
-                # Run the whole pod as the NFS owner
-          runAsUser: 1030
-          runAsGroup: 1000
-          fsGroup: 1000
-          runAsNonRoot: true
-          fsGroupChangePolicy: "OnRootMismatch"
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop: ["ALL"]
-          seccompProfile:
-            type: RuntimeDefault
+        resources:
+          requests:
+            memory: {{ $.Values.global.resources.requests.memory }}
+            cpu: {{ $.Values.global.resources.requests.cpu }}
+          limits:
+            memory: {{ $.Values.global.resources.limits.memory }}
+            cpu: {{ $.Values.global.resources.limits.cpu }}
         image: "{{ $config.image }}:{{ $config.tag }}"
         imagePullPolicy: Always
         env:
@@ -63,11 +51,10 @@ spec:
             secretKeyRef:
               name: {{ $config.postgresql.secretRef }}
               key: password
-        {{- range $key, $value := $values.global.permissions }}
+        {{- range $key, $value := $.Values.global.permissions }}
         - name: {{ $key | quote }}
           value: {{ $value | quote }}
         {{- end }}
-
         ports:
         - containerPort: {{ $config.containerPort }} 
         volumeMounts:
@@ -85,8 +72,6 @@ spec:
           subPath: movies
         - name: downloads
           mountPath: /downloads
-        - name: tmp-run
-          mountPath: /run
       volumes:
       - name: configs
         persistentVolumeClaim:
@@ -97,8 +82,5 @@ spec:
       - name: libraries
         persistentVolumeClaim:
           claimName: libraries
-      - name: tmp-run
-        emptyDir:
-          medium: Memory
 {{ end }}
 {{- end }}
