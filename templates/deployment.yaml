@@ -29,6 +29,11 @@ spec:
           memory: "1Gi"
           cpu: "500m"
         securityContext:
+                # Run the whole pod as the NFS owner
+          runAsUser: 1024
+          runAsGroup: 1000
+          fsGroup: 1000
+          fsGroupChangePolicy: "OnRootMismatch"
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
