@@ -1,5 +1,4 @@
 {{- range $service, $config := .Values.services }}
-{{ if $config.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -14,5 +13,4 @@ spec:
   - name: {{ $service }}
     port: 80
     targetPort: {{ $config.containerPort }}
-{{ end }}
 {{- end }}

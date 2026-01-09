@@ -1,5 +1,5 @@
 {{- range $service, $config := .Values.services }}
-{{- if and (eq $.Values.global.network.expose.type "route") ( $config.enabled ) }}
+{{- if eq $.Values.global.network.expose.type "route"}}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -8,8 +8,8 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   parentRefs:
-    - name: {{ $.Values.global.network.expose.gateway.name }}
-      namespace: {{ $.Values.global.network.expose.gateway.namespace }}
+    - name: {{ $.Values.global.network.gateway.name }}
+      namespace: {{ $.Values.global.network.gateway.namespace }}
       sectionName: https
       group: gateway.networking.k8s.io	
       kind: Gateway

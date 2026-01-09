@@ -1,5 +1,4 @@
 {{- range $service, $config := .Values.services }}
-{{ if $config.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,34 +43,50 @@ spec:
         - name: {{ upper $service }}__POSTGRES__USER
           valueFrom:
             secretKeyRef:
-              name: {{ $config.postgresql.secretRef }}
+              name: {{ $config.postgres.secretRef }}
               key: username
         - name: {{ upper $service }}__POSTGRES__PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ $config.postgresql.secretRef }}
+              name: {{ $config.postgres.secretRef }}
               key: password
         {{- range $key, $value := $.Values.global.permissions }}
         - name: {{ $key | quote }}
           value: {{ $value | quote }}
         {{- end }}
         ports:
-        - containerPort: {{ $config.containerPort }} 
+        - containerPort: {{ $config.containerPort }}
         volumeMounts:
         - name: configs
           mountPath: /config
           subPath: {{ $service }}
-        - name: libraries
-          mountPath: /books
-          subPath: books
+        {{- if and (ne $service "prowlarr") (ne $service "bazarr") }}
+        - name: downloads
+          mountPath: /downloads
+        {{- end }}
+        {{- if eq $service "sonarr" }}
         - name: libraries
           mountPath: /tv
-          subPath: series
+          subPath: shows
+        {{- end }}
+        {{- if eq $service "radarr" }}
         - name: libraries
           mountPath: /movies
           subPath: movies
-        - name: downloads
-          mountPath: /downloads
+        {{- end }}
+        {{- if eq $service "readarr" }}
+        - name: libraries
+          mountPath: /books
+          subPath: books
+        {{- end }}
+        {{- if eq $service "bazarr" }}
+        - name: libraries
+          mountPath: /tv
+          subPath: shows
+        - name: libraries
+          mountPath: /movies
+          subPath: movies
+        {{- end }}
       volumes:
       - name: configs
         persistentVolumeClaim:
@@ -82,5 +97,4 @@ spec:
       - name: libraries
         persistentVolumeClaim:
           claimName: libraries
-{{ end }}
 {{- end }}

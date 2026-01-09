@@ -1,15 +1,15 @@
-{{- range $storage, $config := .Values.storage.mounts }}
+{{- range $name, $config := $.Values.global.storage }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $storage }}
+  name: {{ $name }}
   namespace: {{ $.Release.Namespace }}
 spec:
   storageClassName: ""
   selector:
     matchLabels:
-      type: {{ $storage }}-mgmt
+      type: {{ $name }}
   accessModes: {{ $config.accessModes }}
   resources:
     requests:

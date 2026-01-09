@@ -1,6 +1,5 @@
-{{- $values := .Values -}}
 {{- range $service, $config := .Values.services }}
-{{ if $config.postgresql }}
+{{ if or $config.postgres.enabled | default $.Values.global.postgres.enabled }}
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
@@ -16,17 +15,17 @@ spec:
   bootstrap:
     initdb:
       database: main
-      owner: {{ $config.postgresql.username }}
+      owner: {{ $config.postgres.username }}
       dataChecksums: true
       postInitSQL:
         - "CREATE DATABASE \"{{ $service }}-log\";"
         - "CREATE DATABASE \"{{ $service }}-main\";"
         - "CREATE DATABASE \"{{ $service }}-cache\";"
-        - "ALTER DATABASE \"{{ $service }}-main\" OWNER TO {{ $config.postgresql.username }};"
-        - "ALTER DATABASE \"{{ $service }}-log\" OWNER TO {{ $config.postgresql.username }};"
-        - "ALTER DATABASE \"{{ $service }}-cache\" OWNER TO {{ $config.postgresql.username }};"
+        - "ALTER DATABASE \"{{ $service }}-main\" OWNER TO {{ $config.postgres.username }};"
+        - "ALTER DATABASE \"{{ $service }}-log\" OWNER TO {{ $config.postgres.username }};"
+        - "ALTER DATABASE \"{{ $service }}-cache\" OWNER TO {{ $config.postgres.username }};"
       secret:
-        name: {{ $config.postgresql.secretRef }}  
+        name: {{ $config.postgres.secretRef }}  
   monitoring:
     enablePodMonitor: true
 {{ end }}

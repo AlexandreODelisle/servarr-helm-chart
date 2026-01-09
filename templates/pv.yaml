@@ -1,13 +1,13 @@
-{{ $root := .Values }}
-{{- range $storage, $config := .Values.storage.mounts }}
+{{- range $name, $config := $.Values.global.storage }}
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ $storage }}-mgmt
+  name: {{ $name }}
   labels:
-    type: {{ $storage }}-mgmt
+    type: {{ $name }}
 spec:
+  persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   capacity:
     storage: {{ $config.storage }}
@@ -18,6 +18,6 @@ spec:
     - nolock
     - rw
   nfs:
-    server: {{ $root.storage.nfs.IPAddress }}
+    server: {{ $.Values.global.nfs.IPAddress }}
     path: {{ $config.path }}
 {{- end }}
