@@ -66,8 +66,8 @@ spec:
         {{- end }}
         {{- if eq $service "sonarr" }}
         - name: libraries
-          mountPath: /tv
-          subPath: shows
+          mountPath: /series
+          subPath: series
         {{- end }}
         {{- if eq $service "radarr" }}
         - name: libraries
@@ -81,8 +81,8 @@ spec:
         {{- end }}
         {{- if eq $service "bazarr" }}
         - name: libraries
-          mountPath: /tv
-          subPath: shows
+          mountPath: /series
+          subPath: series
         - name: libraries
           mountPath: /movies
           subPath: movies
