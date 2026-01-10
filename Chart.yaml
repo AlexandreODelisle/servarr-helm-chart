@@ -1,0 +1,16 @@
+apiVersion: v2
+description: Servarr service deployment 
+name: servarr
+type: application
+version: "0.0.1"
+appVersion: "0.0.1"
+keywords:
+  - sonarr
+  - radarr
+  - readarr
+  - prowlarr
+  - bazarr
+  - servarr
+maintainers:
+  - name: Alexandre Delisle
+    email: alexodelisle@gmail.com

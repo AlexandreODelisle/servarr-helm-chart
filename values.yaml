@@ -1,0 +1,78 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr
+    tag: 4.0.15
+    containerPort: 8989
+    postgres:
+      username: sonarr
+      secretRef: sonarr-db-secret      
+  radarr:
+    image: lscr.io/linuxserver/radarr
+    tag: 5.26.2
+    containerPort: 7878
+    postgres:
+      username: radarr
+      secretRef: radarr-db-secret
+  readarr:
+    image: lscr.io/linuxserver/readarr
+    tag: 0.3.22-nightly
+    containerPort: 8787
+    postgres:
+      username: readarr
+      secretRef: readarr-db-secret
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr
+    tag: 1.37.0
+    containerPort: 9696
+    postgres:
+      username: prowlarr
+      secretRef: prowlarr-db-secret
+  bazarr:
+    image: lscr.io/linuxserver/bazarr
+    tag: v1.4.3-ls264
+    containerPort: 6767
+    postgres:
+      username: bazarr
+      secretRef: bazarr-db-secret
+
+global:
+  network:
+    expose:
+      type: route # options: ingress, route, none
+    gateway:
+      name: cilium-gateway
+      namespace: kube-system
+    domain: adelisle.com
+
+  resources:
+    requests:
+      memory: "512Mi"     
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "200m"
+
+  permissions:
+    PUID: "1030"
+    PGID: "1000"
+  nfs: 
+    IPAddress: 192.168.1.80
+  postgres:
+    enabled: true
+  storage: 
+    configs:
+      storage: 500Gi
+      storageClaim: 200Gi
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/configs"
+    downloads:
+      storage: 500Gi
+      storageClaim: 200Gi
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/downloads" 
+    libraries:
+      storage: 2Ti
+      storageClaim: 1Ti
+      accessModes: [ReadWriteMany]
+      path: "/volume1/kubernetes/libraries" 
+

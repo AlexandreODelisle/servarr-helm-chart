@@ -1,0 +1,100 @@
+{{- range $service, $config := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service }}
+  namespace: {{ $.Release.Namespace }}
+  labels: 
+    app: {{ $service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $service }}
+  template:
+    metadata:
+      labels:
+        app: {{ $service }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - name: {{ $service }}
+        resources:
+          requests:
+            memory: {{ $.Values.global.resources.requests.memory }}
+            cpu: {{ $.Values.global.resources.requests.cpu }}
+          limits:
+            memory: {{ $.Values.global.resources.limits.memory }}
+            cpu: {{ $.Values.global.resources.limits.cpu }}
+        image: "{{ $config.image }}:{{ $config.tag }}"
+        imagePullPolicy: Always
+        env:
+        - name: {{ upper $service }}__AUTH__METHOD
+          value: External
+        - name: {{ upper $service }}__AUTH__REQUIRED
+          value: DisabledForLocalAddresses
+        - name: {{ upper $service }}__APP__THEME
+          value: dark
+        - name: {{ upper $service }}__POSTGRES__HOST
+          value: {{ $service }}-db-rw.{{ $.Release.Namespace }}.svc.cluster.local
+        - name: {{ upper $service }}__POSTGRES_PORT
+          value: "5432"
+        - name: {{ upper $service }}__POSTGRES__USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ $config.postgres.secretRef }}
+              key: username
+        - name: {{ upper $service }}__POSTGRES__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $config.postgres.secretRef }}
+              key: password
+        {{- range $key, $value := $.Values.global.permissions }}
+        - name: {{ $key | quote }}
+          value: {{ $value | quote }}
+        {{- end }}
+        ports:
+        - containerPort: {{ $config.containerPort }}
+        volumeMounts:
+        - name: configs
+          mountPath: /config
+          subPath: {{ $service }}
+        {{- if and (ne $service "prowlarr") (ne $service "bazarr") }}
+        - name: downloads
+          mountPath: /downloads
+        {{- end }}
+        {{- if eq $service "sonarr" }}
+        - name: libraries
+          mountPath: /series
+          subPath: series
+        {{- end }}
+        {{- if eq $service "radarr" }}
+        - name: libraries
+          mountPath: /movies
+          subPath: movies
+        {{- end }}
+        {{- if eq $service "readarr" }}
+        - name: libraries
+          mountPath: /books
+          subPath: books
+        {{- end }}
+        {{- if eq $service "bazarr" }}
+        - name: libraries
+          mountPath: /series
+          subPath: series
+        - name: libraries
+          mountPath: /movies
+          subPath: movies
+        {{- end }}
+      volumes:
+      - name: configs
+        persistentVolumeClaim:
+          claimName: configs
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: downloads
+      - name: libraries
+        persistentVolumeClaim:
+          claimName: libraries
+{{- end }}
