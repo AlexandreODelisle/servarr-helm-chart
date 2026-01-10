@@ -8,10 +8,10 @@ metadata:
   labels: 
     cnpg.io/cluster:  {{ $service }}-db
 spec:
-  instances: 1
+  instances: 3
   storage:
     storageClass: openebs-hostpath
-    size: 5Gi
+    size: 20Gi
   bootstrap:
     initdb:
       database: main
@@ -27,6 +27,6 @@ spec:
       secret:
         name: {{ $config.postgres.secretRef }}  
   monitoring:
-    enablePodMonitor: true
+    enablePodMonitor: false
 {{ end }}
 {{- end }}
